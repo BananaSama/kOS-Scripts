@@ -109,18 +109,19 @@ log "Time (sec)" + "," + "Current Pressure (kPa)" to flightDataFile.
 set t0 to floor(time:seconds).
 lock logStep to round((time:seconds - t0),1) + "," + round(ship:altitude) + "," + pressureSensor:display.
 
-//Log pressure data until vehicle altitude is > 10km
-until ship:altitude > 200000{
-    log logStep to flightDataFile.
-    print logStep.
-    wait 1.
-}
-
-
-
-// Check for MECO and stage
-when (engFirstStage:thrust < 10  and ship:altitude > 1000) then {
-    
+set t_last to round((time:seconds - t0)).
+UNTIL false {
+    //log altitude vs pressure until 200000
+    if round((time:seconds - t0)) > t_last{
+        if ship:altitude < 200000{
+        log logStep to flightDataFile.
+        print logStep.
+        }
+        set t_last to round((time:seconds - t0)).
+    }
+    //check for meco and stage
+    PRINT "=====Waiting for thrust to drop=====".
+    when (engFirstStage:thrust < 10  and ship:altitude > 1000) then {
     print "MECO".
     stage.
 
@@ -131,14 +132,39 @@ when (engFirstStage:thrust < 10  and ship:altitude > 1000) then {
     }
 
     lock throttle to 1.
-    
-    return false.
-}.
+    }
+    //Hold steering attitude to fly straight up
+    PRINT "=====STEERING====".
+    SET steerCmd TO heading(90,90).
+    LOCK steering TO steerCmd.
+
+}
+
+//Log pressure data until vehicle altitude is > 10km
+// until ship:altitude > 200000{
+//     log logStep to flightDataFile.
+//     print logStep.
+//     wait 1.
+// }
 
 
-//Hold steering attitude to fly straight up
-SET steerCmd TO heading(90,90).
-LOCK steering TO steerCmd.
+
+// Check for MECO and stage
+// when (engFirstStage:thrust < 10  and ship:altitude > 1000) then {
+//     print "MECO".
+//     stage.
+
+//     until engSecondStage:ignition = true{
+//         PRINT "Staging".
+//         STAGE.
+//         wait 2.
+//     }
+
+//     lock throttle to 1.
+// }
+
+
+
 
 
 
