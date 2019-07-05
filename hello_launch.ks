@@ -122,11 +122,11 @@ UNTIL false {
     //check for meco and stage
     PRINT "=====Waiting for thrust to drop=====".
     when (engFirstStage:thrust < 10  and ship:altitude > 1000) then {
-    print "MECO".
+    //print "MECO".
     stage.
 
     until engSecondStage:ignition = true{
-        PRINT "Staging".
+        //PRINT "Staging".
         STAGE.
         wait 2.
     }
@@ -175,3 +175,5 @@ UNTIL false {
 //Copy flight log file to Flight_Logs folder and add a unique real-world timestamp
 copyPath("0:/flightDataFile", "0:/Flight_Logs/flightDataFile_" + currentVehicle:name + "_" + kuniverse:realworldtime + ".txt").
 deletePath("0:/flightDataFile").
+
+// this be a comment
